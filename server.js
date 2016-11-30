@@ -28,12 +28,14 @@ app.get('/login', function(req, res) {
 app.post('/login', function(req, res) {
   var uid = req.body.username;
   var pwd = req.body.password;
-  console.log('process uid: ' + uid + ' pwd: ' + pwd);
+  console.log('Process login request...');
+  //console.log('process uid: ' + uid + ' pwd: ' + pwd);
 
   const py = new PythonShell('connect.py');
   py.send(`select * from passports where username='${uid}';`);
   py.on('message', function(output) {
     if (JSON.parse(output).length && JSON.parse(output)[0][1] == pwd) {
+      console.log('Login OK');
       req.session.username = uid;
       res.redirect('/');
     }
@@ -47,7 +49,7 @@ app.post('/signup', function(req, res) {
   var uid = req.body.username;
   var pwd = req.body.password;
   var name = req.body.firstname + ' ' + req.body.lastname;
-  console.log(name + ' ' + uid + ' ' + pwd);
+  console.log('Process signup request...');
 
   const py = new PythonShell('connect.py');
   py.send(`select * from passports where username='${uid}';`);
@@ -59,7 +61,7 @@ app.post('/signup', function(req, res) {
       py2.send(`insert into passports values ('${uid}', '${pwd}', '${name}')`);
       py2.end(function(err) {
         if (err) return;
-        console.log('register complete');
+        console.log('Register complete');
         req.session.username = uid;
         res.redirect('/');
       });
@@ -70,7 +72,7 @@ app.post('/signup', function(req, res) {
   });
 });
 app.get('/logout', function(req, res) {
-  console.log('logout triggered');
+  console.log('Logout triggered...');
   delete req.session.username;
   res.redirect('/login');
 });
@@ -188,7 +190,7 @@ function queryFinalResult(data) {
 }
 
 io.on('connection', function(socket) {
-  console.log('connected');
+  console.log('UI successfully connected to server');
 
   socket.on('login', function(data) {
     let username = data['username'];
@@ -197,7 +199,7 @@ io.on('connection', function(socket) {
   })
 
   socket.on('query', function(data) {
-    console.log(data);
+    console.log('Query submitted. Waiting for response...');
 
     const lines = queryBusinessRuleA(data)
       .concat(queryBusinessRuleD(data))
@@ -225,12 +227,12 @@ io.on('connection', function(socket) {
       py.send(`select * from cohort where ${condition};`);
       py.on('message', function(res) {
         let cohort = JSON.parse(res);
-        console.log(cohort.length);
+        //console.log(cohort.length);
         socket.emit('cohort', cohort);
       });
       py.end(function(err) {
         if (err) console.log(err);
-        else console.log('finished fetching cohort');
+        else console.log('Finished fetching cohort');
       });
 
       // get kickout
@@ -238,18 +240,18 @@ io.on('connection', function(socket) {
       py.send(`select * from kick_out_cohort where ${condition};`);
       py.on('message', function(res) {
         let kickout = JSON.parse(res);
-        console.log(kickout.length);
+        //console.log(kickout.length);
         socket.emit('kickout', kickout);
       });
       py.end(function(err) {
         if (err) console.log(err);
-        else console.log('finished fetching kickout');
+        else console.log('Finished fetching kickout');
       });
     });
 
   });
 
   io.on('disconnect', function(socket) {
-    console.log('disconnected');
+    console.log('Disconnected');
   });
 });
