@@ -6,12 +6,14 @@ const app = require('express')();
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 
+// login authentication
 function auth(req, res, next) {
   if (!req.session.username)
     res.redirect('/login');
   else next();
 }
 
+// use session and body parser
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(session({
   secret: 'keyboard cat',
@@ -19,6 +21,7 @@ app.use(session({
   saveUninitialized: true
 }));
 
+// serve files and get/post requests
 app.get('/', auth, function(req, res) {
   res.sendFile(__dirname + '/pages/index.html');
 });
@@ -60,7 +63,10 @@ app.post('/signup', function(req, res) {
       const py2 = new PythonShell('connect.py');
       py2.send(`insert into passports values ('${uid}', '${pwd}', '${name}')`);
       py2.end(function(err) {
-        if (err) return;
+        if (err) {
+          console.log('Register failed');
+          return;
+        }
         console.log('Register complete');
         req.session.username = uid;
         res.redirect('/');
@@ -201,6 +207,7 @@ io.on('connection', function(socket) {
   socket.on('query', function(data) {
     console.log('Query submitted. Waiting for response...');
 
+    // concatenate all sql query clauses
     const lines = queryBusinessRuleA(data)
       .concat(queryBusinessRuleD(data))
       .concat(queryBusinessRuleBC(data))
