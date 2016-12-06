@@ -27,6 +27,30 @@ npm start
 
 4. Select 'COHORT' or 'KICKOUT' tab, and click 'Download CSV' to download the data as a csv file.
 
+5. Click Logout to exit.
+
 ### Development Guide
 
-TODO
+* File structure
+```
+README.md         // Help documentation
+package.json      // json file for node modules
+login.html        // login page html
+server.js         // js file for node.js server
+connect.py        // python module for connecting to impala
+node_modules      // directory of node.js modules
+  |- ......
+pages             // directory of web pages
+  |- fonts        // directory for fonts
+  |- img          // directory for images
+  |- app.js       // main js file for angular controller
+  |- style.css    // main css file
+  |- index.html   // main html file
+  |- query.html   // sub html file for query page
+  |- report.html  // sub html file for report page
+  |- graph.html   // TODO: sub html file for visualization
+```
+
+* How to modify
+
+If you'd like to add more queries, you need to modify 3 files. First, add more questions in the query.html. Second, go to app.js and add more
