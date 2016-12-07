@@ -55,4 +55,4 @@ pages             // directory of web pages
 
 If you'd like to add more queries, you need to modify 3 files. First, add more questions in the query.html. Second, go to app.js and add corresponding data and send query using socket. Third, display data in the report.html using ng-repeat.
 
-Also, if you want to implement data visualization on the graph page, make sure to add a new route in app.js, and make graph.html only a <div> rather than a <html>
+Also, if you want to implement data visualization on the graph page, make sure to add a new route in app.js, and make graph.html a div only rather than a complete html.
